@@ -1,5 +1,5 @@
 const fs = require("fs");
-
+const moment = require("moment")
 
 var firstStage = new Promise((resolve, reject) => {
 	fs.readFile("../database/closed_issues.json", "utf-8", (err, issues_json) => {
@@ -74,11 +74,11 @@ var firstStage = new Promise((resolve, reject) => {
 					if(!issueId) return;
 
 					issue.closed_by = Employee_name;
+					issue.closed_at = addRandomDate(issue.created_at, issue.created_time);
 					result_closed_issues.push(issue)
 
 					array_issues.push(issueId)
 				} 
-				console.log(String(array_issues))
 				firstline += String(line) + "["+String(array_issues) +"]\n" 
 			});
 
@@ -98,4 +98,12 @@ function addCustomerToIssues(issuesObj, customer_name, customer_email){
 }
 
 
+function addRandomDate(date, time){
+	var datestring = date ;
+	var unix = moment(datestring, "MM-DD-YYYY").valueOf();
+	console.log(unix);
 
+	//random from 1 to 7 days
+	var random = (Math.floor(Math.random() * 6) + 1) * 24 * 60 * 60 * 1000 
+	return moment(unix + random).format("L")
+}
