@@ -1,85 +1,30 @@
-const fs = require("fs");
+var express = require('express');
+var app = express();
+var openIssue = require("./dataAPI.js").openIssue ,
+	closedIssue = require("./dataAPI.js").closedIssue,
+	employee = require("./dataAPI").employee,
+	customer = require("./dataAPI").customer,
+	recycleClosedToBeOpenIssue = require("./dataAPI").recycleClosedToBeOpenIssue
 
-const openIssuePath = "../database/open_issue_Final.json"
-const closedIssuePath = "../database/closed_issues_Final.json"
-const EmployeePath = "../database/Employee_Final.csv"
-const CustomerPath = "../database/customer_Final.csv"
+app.get("/", (req, res) => {
+	
+})
 
+app.get('/getAll', function (req, res) {
+	//random between 1-3 issue
+	var random = Math.floor(Math.random() * 2) + 1;
 
-module.exports = {
-	openIssue: openJsonAndReturnAsArray(openIssuePath).then( arr => arr),
-	closedIssue: openJsonAndReturnAsArray(closedIssuePath).then(arr => arr),
-	employee: openCSVAndReturnAsArray(EmployeePath).then(arr => arr),
-	customer: openCSVAndReturnAsArray(CustomerPath).then(arr => arr),
-	recycleClosedToBeOpenIssue: recycleClosedToBeOpenIssue
-}
-
-
-function recycleClosedToBeOpenIssue(closedIssue, openIssue){
-	if(closedIssue.length < 50) return;
-	var random = Math.floor(Math.random() * 100) + 1;
-	var issue = closedIssue.slice(random,1);
-	//change status, closed_at. closed_by
-	issue.closed_at = null;
-	issue.closed_by = null;
-	status = "open";
-	openIssue.push(issue);
-}
+	recycleClosedToBeOpenIssue(random, closedIssue, openIssue)
+	var Response = {
+		openIssue: openIssue
+		closedIssue: closedIssue
+		employee: employee
+		customer customer
+	}
+	res.json(Response)
+});
 
 
-function openCSVAndReturnAsArray(path, isEmployee){
-	return new Promise((resolve, reject) => {
-		fs.readFile(path, "utf-8", (err, files) => {
-			if(err) reject(err);
-			var result_arr = [];
-			var fields = files.split("\n")[0];
-
-			files.split("\n").map((line, index) => {
-				if(index === 0) return;
-				var obj = {};
-				
-				if(!isEmployee){
-					fields.map( (field, fieldIdx) => {
-						obj[field] = line.split(",")[fieldIdx];
-					});
-					result_arr.push(obj)
-				}
-
-				if(isEmployee){
-					var values = line.split("[")[0];
-					var issuesId = line.split("[")[1];
-					//delete closing square_bracket ]
-					var issuesId_ = issuesId.substring(0, issuesId.length-1)
-
-					var array_issues = issuesId_.split(",").map(id => id);
-
-					fields.map( (field, fieldIdx) => {
-						obj[field] = line.split(",")[fieldIdx];
-					});
-
-					obj["issue"] = array_issues;
-					result_arr.push(obj)
-				}
-			});
-
-
-			resolve(result_arr)
-		})
-	})
-}
-
-
-
-
-function openJsonAndReturnAsArray(path){
-	return new Promise((resolve, reject) => {
-		fs.readFile(path, "utf-8", (err, files) ={
-			if(err) reject(err)
-			var fileObj = JSON.parse(files)
-			resolve(fileObj)
-		})
-	})
-}
-
-
-
+app.listen(8000, function () {
+  console.log('Example app listening on port 8000');
+});
