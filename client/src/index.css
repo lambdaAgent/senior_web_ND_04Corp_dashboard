@@ -1,5 +1,140 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+.overlay_VD{
+  background-color: none; 
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top:0;
+  left:0;
+  z-index: 10001;
 }
+
+@media (max-width: 720px){
+  .desktop{
+    display: none;
+  }
+
+  .reviews-mobile{
+    max-width: 480px;
+  }
+  body{
+    margin-top: 11px;
+  }
+  .login{
+    margin-top: 59px;
+  }
+
+}
+@media (min-width: 720px){
+  .mobile{
+    display: none;
+  }
+  body{
+    margin-top: 70px;
+  }
+}
+
+.floatingButton:active{
+  border: none;
+}
+
+.reviewList{
+  border: 1px solid rgba(0,0,0, 0.5);
+  border-bottom: none;
+  border-top: none;
+  padding: 10px 0;
+  padding-left: 30px;
+}
+
+.event:hover{
+  background-color: rgba(255,0,0,0.5);
+  cursor:pointer;
+  color: white;
+}
+#noHover{
+  background-color: white;
+  cursor: default;
+  color: black;
+}
+
+.error{
+  box-shadow: 2px 1px 1px 1px rgba(100,0,0, 0.2);
+  border: 1px solid red;
+}
+.jumbotron{
+  color: #2c3e50;
+  background: #ecf0f1;
+}
+
+.glyphicon { 
+  position: relative; top: 1px; 
+  display: inline-block; 
+  font-family: 'Glyphicons Halflings'; 
+  font-style: normal; 
+  font-weight: normal; 
+  line-height: 1; 
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale; 
+}
+
+.navbar-inverse{
+  background-color: #2c3e50;
+}
+
+.navbar-inverse .navbar-nav>li>a{
+  color: white;
+}
+
+.navbar-inverse .navbar-brand{
+  color: white;
+}
+
+.body{
+  margin-top: 70px;
+}
+
+.hide{
+  display: "none";
+
+}
+
+
+
+body {
+  padding : 10px ;
+  
+}
+
+#exTab1 .tab-content {
+  color : white;
+  background-color: #428bca;
+  padding : 5px 15px;
+}
+
+#exTab2 h3 {
+  color : white;
+  background-color: #428bca;
+  padding : 5px 15px;
+}
+
+/* remove border radius for the tab */
+
+#exTab1 .nav-pills > li > a {
+  border-radius: 0;
+}
+
+/* change border radius for the tab , apply corners on top*/
+
+#exTab3 .nav-pills > li > a {
+  border-radius: 4px 4px 0 0 ;
+}
+
+#exTab3 .tab-content {
+  color : white;
+  background-color: #428bca;
+  padding : 5px 15px;
+}
+
+
+
+
+
