@@ -3,7 +3,7 @@ import {createStore} from "redux";
 
 const keyMetric = (state={}, action) => {
 	switch(action.type){
-		case "DV_GET_FROM_DB":
+		case "DV_newData":
 			return Object.assign({}, state, action.data);
 		break;
 

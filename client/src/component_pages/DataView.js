@@ -26,13 +26,16 @@ class DataView extends React.Component {
       //TODO; clearInterval
   	}
   	componentWillUpdate(nextProps, nextState) {
-  	 	console.log("will update");
+  	 	console.log("will update", nextProps);
   	}
     render() {
-    	const AllIssues = this.props.newData ? this.props.allIssues : undefined;
+    	//if no newData, wait for nextRender, show loading
+    	var shownIssues = this.props.newData ? this.props.allIssues : undefined;
+    	//if there is filtered data, show filtered data
+    	shownIssues = this.props.filtered ? this.props.filtered : this.props.allIssues;
     	const props = this.props;
-    	const submitted = (AllIssues && AllIssues.length > 0) ? 
-					    	AllIssues.map((s,index) =>{
+    	const submitted = (shownIssues && shownIssues.length > 0) ? 
+					    	shownIssues.map((s,index) =>{
 								return (
 									<tr key={"tablerow"+index}>
 										<th scope="row">{s.created_at}</th>
@@ -45,20 +48,23 @@ class DataView extends React.Component {
 									</tr>
 								)
 							}) : ""
+        
+
         return (
         	<div className="container">
+        	    <Navbar />
         	    <button onClick={() => this.props.getDatabaseFromServer()}> update</button>
-        		{(!AllIssues) ? <div>Loading...</div> : 
+        		{(!shownIssues) ? <div>Loading...</div> : 
 	        		<table className="table table-hover">
 					  <thead className="thead-inverse">
 					    <tr>
-					      <TableHead content={"Submitted"} PROPS={props} AllIssues={AllIssues} />
-					      <TableHead content={"Full Name"} PROPS={props} AllIssues={AllIssues}/>
-					      <TableHead content={"Email"} PROPS={props} AllIssues={AllIssues}/>
-					      <TableHead content={"Status"} PROPS={props} AllIssues={AllIssues}/>
-					      <TableHead content={"Closed By"} PROPS={props} AllIssues={AllIssues}/>
-					      <TableHead content={"Closed At"} PROPS={props} AllIssues={AllIssues}/>
-					      <TableHead content={"Description"} PROPS={props} AllIssues={AllIssues}/>
+					      <TableHead content={"Submitted"} PROPS={props}   />
+					      <TableHead content={"Full Name"} PROPS={props}  />
+					      <TableHead content={"Email"} PROPS={props}  />
+					      <TableHead content={"Status"} PROPS={props}  />
+					      <TableHead content={"Closed By"} PROPS={props}  />
+					      <TableHead content={"Closed At"} PROPS={props}  />
+					      <TableHead content={"Description"} PROPS={props}  />
 					    </tr>
 					  </thead>
 					  <tbody>
@@ -68,6 +74,8 @@ class DataView extends React.Component {
         		}
         	</div>
         );
+
+
     }
 }
 
@@ -87,18 +95,20 @@ class TableHead extends React.Component {
 		field = reformatField(field);
 		var iconClassName = "";
 		// iconClassName should be reversed, or what will happen after toggle.
+		// this is because there is race condition between redux and react, redux wins the race.
 		if (this.state.sortAsc == true) iconClassName = "glyphicon glyphicon-triangle-bottom"; 
 		if (this.state.sortAsc == false) iconClassName = "glyphicon glyphicon-triangle-top";
 
 		// if the file is unsorted, sort once
 		if (this.state.sortAsc === null) {
 			this.setState({sortAsc: true, iconClassName: "glyphicon glyphicon-triangle-top" });
-			return this.props.PROPS.sortBy(this.props.AllIssues, field, true)
+			return this.props.PROPS.sortBy(this.props.PROPS.allIssues, field, true)
 		}
 
-		// // sort must include the reverse of current state,
+		// there is race condition, state won't be changed while sortBy runs, 
+		// so always include reverse of current state to sortBy
 		this.setState({ sortAsc: !this.state.sortAsc, iconClassName});
-		this.props.PROPS.sortBy(this.props.AllIssues, field, !this.state.sortAsc);
+		this.props.PROPS.sortBy(this.props.PROPS.allIssues, field, !this.state.sortAsc);
 	}
 	render(){
 		const props = this.props;
@@ -111,6 +121,8 @@ class TableHead extends React.Component {
 		)
 	}
 };
+
+
 
 function reformatField(field){
 	if(field === "Closed By"){

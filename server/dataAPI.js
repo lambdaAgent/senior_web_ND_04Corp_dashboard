@@ -10,7 +10,7 @@ const CustomerPath = "../database/customer_Final.csv"
 
 var	openIssue = openJsonAndReturnAsArray(openIssuePath);
 var	closedIssue = openJsonAndReturnAsArray(closedIssuePath);
-var	employee = openCSVAndReturnAsArray(EmployeePath);
+var	employee = openCSVAndReturnAsArray(EmployeePath, true);
 var	customer = openCSVAndReturnAsArray(CustomerPath);
 var init = function(){
 	return Promise.all([openIssue,closedIssue,employee,customer])
@@ -45,10 +45,10 @@ function recycleClosedToBeOpenIssue(closedIssue, openIssue){
 		var amount = Math.floor(Math.random() * 2) + 1; //1-3 recycled submitted issues
 		var random = Math.floor(Math.random() * 100) + 1;
 
-		var issues = closedIssue.splice(random,amount);
+		var spliced_issues = closedIssue.splice(random,amount);
 
 		//change status, closed_at. closed_by
-		issues.map(issue => {		
+		spliced_issues.map(issue => {		
 			issue.closed_at = null;
 			issue.closed_by = null;
 			issue.status = "open";
@@ -66,7 +66,6 @@ function openCSVAndReturnAsArray(path, isEmployee){
 			if(err) reject(err);
 			var result_arr = [];
 			var fields = files.split("\n")[0];
-
 			files.split("\n").map((line, index) => {
 				if(index === 0) return;
 				var obj = {};
@@ -81,12 +80,13 @@ function openCSVAndReturnAsArray(path, isEmployee){
 				if(isEmployee){
 					var values = line.split("[")[0];
 					var issuesId = line.split("[")[1];
-					//delete closing square_bracket ]
+					//delete closing square_bracket ];
+					if(!issuesId) return;
 					var issuesId_ = issuesId.substring(0, issuesId.length-1)
 
 					var array_issues = issuesId_.split(",").map(id => id);
 
-					fields.map( (field, fieldIdx) => {
+					fields.split(",").map( (field, fieldIdx) => {
 						obj[field] = line.split(",")[fieldIdx];
 					});
 

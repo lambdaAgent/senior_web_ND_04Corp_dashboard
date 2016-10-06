@@ -1,19 +1,36 @@
 
 const Action = (dispatch) => ({
     searchBar(allIssues, word){
-
+        //matching 6 fields, all except status
+        var result = allIssues.filter(issue => {
+          return (
+            issue.customer_name === word ||
+            issue.customer_email === word ||
+            issue.closed_by === word ||
+            issue.created_at === word ||
+            issue.closed_at === word ||
+            issue.description === word
+          )
+        });
+        dispatch({type: "DV_FILTER", filtered: result, newData: true});
     },
-    showAllCustomer(allIssues){
-
+    showAllCustomer(customer){
+        return customer.map(c => c.name)
     },
-    showAllEmployee(allIssues){
-
+    showAllEmployee(employee){
+        return employee.map(e => e.name)
     },
     filterByEmployeeName(allIssues, name){
-
+      var result = allIssues.filter(issue => issue.closed_by === name)
+      dispatch({type: "DV_FILTER", filtered: result, newData: true  })
     },
     filterByCustomerName(allIssues, name){
-
+      var result = allIssues.filter(issue => issue.customer_name === name)
+      dispatch({type: "DV_FILTER", filtered: result, newData: true  })
+    },
+    filterByStatus(allIssues, status){
+      var result = allIssues.filter(issue => issue.status === status)
+      dispatch({type: "DV_FILTER", filtered: result, newData: true  })
     },
     sortBy(allIssues, field, ASC){
       var result;
@@ -34,16 +51,18 @@ const Action = (dispatch) => ({
           }
       }
       
-      dispatch({ type: "DV_GET_FROM_DB", data: {allIssues: result, newData:true} })
+      dispatch({ type: "DV_newData", data: {allIssues: result, newData:true} })
     },
     getDatabaseFromServer(allIssues, field, ASC){
       fetch("http://localhost:8000/getAll")
         .then(res => res.json() )
         .then(obj => {
-          var arr = [];
           const AllIssues = {allIssues: obj.closedIssue.concat(obj.openIssue) }
-          const newObj = Object.assign({}, AllIssues, {newData: true})
-          dispatch({type: "DV_GET_FROM_DB", data: newObj})
+          //clean unused data
+          delete obj.closedIssue; delete obj.openIssue;
+
+          const newObj = Object.assign({}, obj, AllIssues, {newData: true})
+          dispatch({type: "DV_newData", data: newObj})
         })
         .catch(err => console.error(err))
       
