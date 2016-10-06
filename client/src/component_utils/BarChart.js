@@ -6,8 +6,6 @@ const BarChart = (props) => {
  const load = () => {
 waitNextTick()
     .then(() => {
-        console.log("barchartload")
-
         var chart = $("#barChart")[0];
         if(!chart) return;
 

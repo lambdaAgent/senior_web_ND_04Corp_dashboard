@@ -1,9 +1,28 @@
 const Action = (dispatch) => ({
-    renderBarChart(result){
+    renderBarChart(props, time_type){
+        //time_type = ['yearly', 'monthly']
+        var result , __item;
+        if(time_type === "yearly"){
+          __item = props["AllIssues"];
+          result = {
+            labels: Object.keys(__item),
+            data: sumIssuesByYear(__item),
+            openIssues: props.totalOpenIssues
+          }
+        }
         dispatch({type: "RENDER_BAR_CHART", data: result})
     },
-    renderLineChart(result){
-      console.log("action")
+    renderLineChart(props, time_type){
+          //time_type = ['yearly', 'monthly']
+        var result , __item;
+        if(time_type === "yearly"){
+          __item = props["purchases"];
+          result = {
+            labels: Object.keys(__item),
+            data: sumEachMonthPurchases(__item),
+            openIssues: props.totalPurchases.toFixed(2)
+          }
+        }
         dispatch({type: "RENDER_LINE_CHART", data: result})
     },
     getDatabaseFromServer(){
@@ -11,7 +30,6 @@ const Action = (dispatch) => ({
           .then(res => res.json() )
           .then(obj => {
             const AllIssue = obj.closedIssue.concat(obj.openIssue );
-            console.log("AllIssue", AllIssue.length)
               const PurchasesGroupByMonth = groupObjectByMonth(obj.customer, "purchased_at", true);
               const OpenIssueGroupByMonth = groupObjectByMonth( obj.openIssue, "created_at");
               const CloseIssueGroupByMonth = groupObjectByMonth( obj.closedIssue, "created_at");
@@ -30,7 +48,7 @@ const Action = (dispatch) => ({
                 totalAllIssues, totalOpenIssues, totalClosedIssues, totalPurchases,
                 newData: true
               }
-              dispatch({type: "KeyMetricPage_GET_from_DB", cleansedData: result})
+              dispatch({type: "KM_GET_from_DB", cleansedData: result})
           })
           .catch(err => console.error(err))
     }
@@ -41,6 +59,27 @@ module.exports = Action;
 // ----------------
 //    HELPER
 // ----------------
+
+
+function sumEachMonthPurchases(obj){
+  var result = Object.keys(obj).map(year => {
+      return Object.keys(obj[year]).map(month => {
+          return obj[year][month].reduce((prev, next) => {
+            return prev + next
+          },0)
+      })[0].toFixed(2);
+  });
+  return result;
+}
+
+function sumIssuesByYear(obj){
+  var result = Object.keys(obj).map(year => {
+      return Object.keys(obj[year]).reduce((prev, month) => {
+            return prev + Number(obj[year][month].length);
+      },0)
+  });
+  return result
+}
 
 function findTotalIssues(obj){
   var total_issues = 0
@@ -172,3 +211,4 @@ function totalLength(obj){
     return prev + next.length
   },0)
 }
+

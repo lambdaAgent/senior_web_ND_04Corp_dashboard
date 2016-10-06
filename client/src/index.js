@@ -8,6 +8,7 @@ import { Provider } from "react-redux"
 //pages
 import KeyMetric from './component_pages/KeyMetric';
 import NoMatch from "./component_pages/NoMatch.js";
+import DataView from "./component_pages/DataView"
 
 //css
 import './index.css';
@@ -21,6 +22,7 @@ ReactDOM.render(
 	<Provider store={store}>
 	   	<Router history={browserHistory} >
 		    <Route path="/" component={KeyMetric}/>
+  		    <Route path="/dataview" component={DataView}/>
 			<Route path="*" component={NoMatch}/>
 	  	</Router>
 	</Provider>

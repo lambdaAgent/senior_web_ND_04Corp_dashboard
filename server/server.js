@@ -32,11 +32,11 @@ app.get("/", (req, res) => {
 
 
 app.get('/getAll', function (req, res) {
-	//for each request, recycle old issues, add new purchases.. 
+ 	  //for each request, recycle old issues, add new purchases.. 
   	Promise.all([recycleClosedToBeOpenIssue(closedIssue, openIssue), simulatePurchases(customer)])
     .then(result => {
         var Response = { openIssue, closedIssue,  employee, customer };
-        console.log("openIssue", openIssue)
+
         res.json(Response)
     })
        

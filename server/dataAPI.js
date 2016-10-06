@@ -51,7 +51,7 @@ function recycleClosedToBeOpenIssue(closedIssue, openIssue){
 		issues.map(issue => {		
 			issue.closed_at = null;
 			issue.closed_by = null;
-			status = "open";
+			issue.status = "open";
 			openIssue.push(issue);	
 		});
 

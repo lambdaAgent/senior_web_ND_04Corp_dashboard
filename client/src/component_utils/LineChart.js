@@ -59,7 +59,7 @@ const LineChart = (props) => {
                 Your browser does not support canvas, please upgrade to latest browser
               </canvas>
           </div>
-          <div className="panel-footer">Total Purchases: $ {separateThousands(props.totalPurchases)}</div>
+          <div className="panel-footer">Previous Purchases: $ {separateThousands(props.previousPurchases)} | Total Purchases: $ {separateThousands(props.totalPurchases)}</div>
       </div>      
   );
 }
