@@ -1,4 +1,6 @@
 const fs = require("fs");
+const Promise = require('bluebird');
+const moment = require("moment");
 
 const openIssuePath = "../database/open_issue_Final.json"
 const closedIssuePath = "../database/closed_issues_Final.json"
@@ -6,28 +8,55 @@ const EmployeePath = "../database/Employee_Final.csv"
 const CustomerPath = "../database/customer_Final.csv"
 
 
-module.exports = {
-	openIssue: openJsonAndReturnAsArray(openIssuePath).then( arr => arr),
-	closedIssue: openJsonAndReturnAsArray(closedIssuePath).then(arr => arr),
-	employee: openCSVAndReturnAsArray(EmployeePath).then(arr => arr),
-	customer: openCSVAndReturnAsArray(CustomerPath).then(arr => arr),
-	recycleClosedToBeOpenIssue: recycleClosedToBeOpenIssue
+var	openIssue = openJsonAndReturnAsArray(openIssuePath);
+var	closedIssue = openJsonAndReturnAsArray(closedIssuePath);
+var	employee = openCSVAndReturnAsArray(EmployeePath);
+var	customer = openCSVAndReturnAsArray(CustomerPath);
+var init = function(){
+	return Promise.all([openIssue,closedIssue,employee,customer])
 }
 
+module.exports = {
+	init,
+	recycleClosedToBeOpenIssue,
+	simulatePurchases
+}
+
+function simulatePurchases(customer_arr){
+	return new Promise((resolve, reject) => {
+		var amount = Math.floor(Math.random() * 1) + 1; //1-4 purchases 
+		var random = Math.floor(Math.random() * 1) * 10; //pick from 1 to 700
+		var customers = customer_arr.slice(random, amount).map(c => {
+			c.purchased_at = moment().format("L");
+			customer_arr.push(c)
+		});
+
+		resolve(customer_arr)
+	})
+}
+
+// function simulateUnsubscribeCustomer()
 
 
+function recycleClosedToBeOpenIssue(closedIssue, openIssue){
+	return new Promise((resolve, reject) => {
+		if(closedIssue.length < 50) return;
 
-function recycleClosedToBeOpenIssue(amount, closedIssue, openIssue){
-	if(closedIssue.length < 50) return;
-	var random = Math.floor(Math.random() * 100) + 1;
-	var issues = closedIssue.splice(random,amount);
-	//change status, closed_at. closed_by
-	issues.map(issue => {		
-		issue.closed_at = null;
-		issue.closed_by = null;
-		status = "open";
-		openIssue.push(issue);	
-	});
+		var amount = Math.floor(Math.random() * 2) + 1; //1-3 recycled submitted issues
+		var random = Math.floor(Math.random() * 100) + 1;
+
+		var issues = closedIssue.splice(random,amount);
+
+		//change status, closed_at. closed_by
+		issues.map(issue => {		
+			issue.closed_at = null;
+			issue.closed_by = null;
+			status = "open";
+			openIssue.push(issue);	
+		});
+
+		resolve({openIssue, closedIssue});
+	})
 }
 
 
@@ -43,7 +72,7 @@ function openCSVAndReturnAsArray(path, isEmployee){
 				var obj = {};
 				
 				if(!isEmployee){
-					fields.map( (field, fieldIdx) => {
+					fields.split(",").map( (field, fieldIdx) => {
 						obj[field] = line.split(",")[fieldIdx];
 					});
 					result_arr.push(obj)
@@ -77,7 +106,7 @@ function openCSVAndReturnAsArray(path, isEmployee){
 
 function openJsonAndReturnAsArray(path){
 	return new Promise((resolve, reject) => {
-		fs.readFile(path, "utf-8", (err, files) ={
+		fs.readFile(path, "utf-8", (err, files) => {
 			if(err) reject(err)
 			var fileObj = JSON.parse(files)
 			resolve(fileObj)

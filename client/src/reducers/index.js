@@ -1,8 +1,8 @@
 import { combineReducers } from "redux";
 
 //reducers
-import home from "./home"
+import keyMetric from "./keyMetric_reducer"
 
-var Reducers = combineReducers({home});
+var Reducers = combineReducers({keyMetric});
 
 module.exports = Reducers;

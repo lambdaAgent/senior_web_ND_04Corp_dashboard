@@ -6,7 +6,7 @@ import { createStore } from "redux";
 import { Provider } from "react-redux"
 
 //pages
-import App from './component_pages/App';
+import KeyMetric from './component_pages/KeyMetric';
 import NoMatch from "./component_pages/NoMatch.js";
 
 //css
@@ -20,7 +20,7 @@ var store = createStore(reducers)
 ReactDOM.render(
 	<Provider store={store}>
 	   	<Router history={browserHistory} >
-		    <Route path="/" component={App}/>
+		    <Route path="/" component={KeyMetric}/>
 			<Route path="*" component={NoMatch}/>
 	  	</Router>
 	</Provider>
