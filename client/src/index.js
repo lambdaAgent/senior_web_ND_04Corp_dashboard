@@ -6,9 +6,10 @@ import { createStore } from "redux";
 import { Provider } from "react-redux"
 
 //pages
+import Geospatial from "./component_pages/Geospatial";
 import KeyMetric from './component_pages/KeyMetric';
+import DataView from "./component_pages/DataView";
 import NoMatch from "./component_pages/NoMatch.js";
-import DataView from "./component_pages/DataView"
 
 //css
 import './index.css';
@@ -21,7 +22,8 @@ var store = createStore(reducers)
 ReactDOM.render(
 	<Provider store={store}>
 	   	<Router history={browserHistory} >
-		    <Route path="/" component={KeyMetric}/>
+	   		<Route path="/" component={Geospatial} />
+		    <Route path="/keymetric" component={KeyMetric}/>
   		    <Route path="/dataview" component={DataView}/>
 			<Route path="*" component={NoMatch}/>
 	  	</Router>

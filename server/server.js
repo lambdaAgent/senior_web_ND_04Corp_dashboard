@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var path = require("path")
 var dataApi_P = require("./dataAPI.js").init;
 var	{recycleClosedToBeOpenIssue, simulatePurchases} = require("./dataAPI")
-var openIssue, closedIssue,employee, customer;
+var openIssue, closedIssue, employee, customer, countryCode;
 
 
 dataApi_P().then(arr => {
@@ -13,7 +13,7 @@ dataApi_P().then(arr => {
   closedIssue = arr[1];
   employee = arr[2];
   customer = arr[3];
-
+  countryCode = arr[4];
 
   var app = express();
 
@@ -36,7 +36,7 @@ dataApi_P().then(arr => {
    	  //for each request, recycle old issues, add new purchases.. 
     	Promise.all([recycleClosedToBeOpenIssue(closedIssue, openIssue), simulatePurchases(customer)])
       .then(result => {
-          var Response = { openIssue, closedIssue,  employee, customer };
+          var Response = { openIssue, closedIssue,  employee, customer, countryCode };
           res.json(Response)
       })
          

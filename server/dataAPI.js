@@ -6,14 +6,15 @@ const openIssuePath = "../database/open_issue_Final.json"
 const closedIssuePath = "../database/closed_issues_Final.json"
 const EmployeePath = "../database/Employee_Final.csv"
 const CustomerPath = "../database/customer_Final.csv"
-
+const countryCodePath = "../database/3letterCountryCode.txt";
 
 var	openIssue = openJsonAndReturnAsArray(openIssuePath);
 var	closedIssue = openJsonAndReturnAsArray(closedIssuePath);
 var	employee = openCSVAndReturnAsArray(EmployeePath, true);
 var	customer = openCSVAndReturnAsArray(CustomerPath);
+var countryCode = countryNameAndCountryCode(countryCodePath)
 var init = function(){
-	return Promise.all([openIssue,closedIssue,employee,customer])
+	return Promise.all([openIssue,closedIssue,employee,customer, countryCode])
 }
 
 module.exports = {
@@ -25,9 +26,10 @@ module.exports = {
 function simulatePurchases(customer_arr){
 	return new Promise((resolve, reject) => {
 		var amount = Math.floor(Math.random() * 1) + 1; //1-4 purchases 
-		var random = Math.floor(Math.random() * 1) * 10; //pick from 1 to 700
+		var random = Math.floor(Math.random() * 1) * 100; //pick from 1 to 700
 		var customers = customer_arr.slice(random, amount).map(c => {
 			c.purchased_at = moment().format("L");
+			c.submitIssue_id = "undefined"
 			customer_arr.push(c)
 		});
 
@@ -116,3 +118,26 @@ function openJsonAndReturnAsArray(path){
 
 
 
+function countryNameAndCountryCode(path){
+	return new Promise((resolve) => {
+		fs.readFile(path, "utf-8", (err, files) => {
+			var obj = {}
+			files.split("\n").map(line => {
+				var key_value = splitByFirstSpace(line);
+				var key = key_value[0];
+				var value = key_value[1];
+				obj[key] = value;
+			});
+			resolve(obj)
+		})
+	})
+}
+
+function splitByFirstSpace(file){
+	var idx = file.indexOf(" ")
+	//miss tuple
+	var letter_name = file.split("	");
+	var letterCode = letter_name[0];
+	var countryName = letter_name[1];
+	return [letterCode, countryName]
+}

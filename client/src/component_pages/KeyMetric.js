@@ -32,19 +32,19 @@ class App extends Component {
       window.addEventListener("resize", this.setState({width: window.innerWidth}) )
       this.setState({width: window.innerWidth}) 
       CHART = window.Chart;
-      // this.loopEvery2Second = setInterval( () => {
+      this.loopEvery2Second = setInterval( () => {
           this.props.getDatabaseFromServer();
-      // },2000);
+      },2000);
   }
   componentWillUnmount() {
-      // clearInterval(this.loopEvery2Second)
+      clearInterval(this.loopEvery2Second)
   }
   componentWillUpdate(nextProps, nextState) {
     //using redux, React need to load twice before finally initialize the data from server
       if(nextProps.newData){
         previousPurchase = this.props.totalPurchases || 0;
         previousPurchase = previousPurchase.toFixed(2);
-        // console.log("will update", previousPurchase)
+
         this.props.renderLineChart(nextProps, 'yearly')
         this.props.renderBarChart(nextProps, 'yearly')
       }
@@ -57,22 +57,23 @@ class App extends Component {
   render() {
     //using redux, all dependent state must be managed within reducer. avoid local state, 
     return (
-      <div className="container">
+      <div>
           { (this.state.width > 770) 
              ? /*DESKTOP navbar*/
                 //TODO, navbar desktop should have header
-                <Navbar />
+                <Navbar 
+                  NavHeader="Key Metric"
+                />
              : /*MOBILE navber*/
                 ""
           }
-          <div>
-          <button onClick={this._click.bind(this)}>willUpdate</button>
+          <main className="container">
             <Desktop 
               BarChartData={this.props.barChartData}
               LineChartData={this.props.lineChartData}
             />
 
-          </div>
+          </main>
 
       </div>
     );
@@ -95,7 +96,7 @@ const Desktop = (props) => {
   //TODO: if there is no LC or BC show loading;
   if(!BC || !LC) return <div></div>;
   return(
-      <main>
+      <div>
          <BarChart
             Chart={CHART}
             labels={ BC.labels }
@@ -114,7 +115,7 @@ const Desktop = (props) => {
             borderColor={COLOR.border[0]}
             totalPurchases={LC.totalPurchases} 
             previousPurchases={previousPurchase}/>
-      </main>
+      </div>
   )
 };
 
