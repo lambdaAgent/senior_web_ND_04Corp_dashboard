@@ -1,4 +1,4 @@
-# Project04 - Restaurant Finder
+# Project04 - Corporate Dashboard
 
 ### Info:
 1. the project is divided into 3 main folder: /client, /database, /server
@@ -14,13 +14,13 @@
 
 ### How TO RUN:
 1. `git clone`
-2. To run client: 
-   * `cd client/build`
-   * `python -m SimpleHTTPServer *port*`
-3. To run server:
+2. To run server:
    * `cd server`
    * `npm install`
    * `node server.js`
+3. To run client: 
+   * `cd client/build`
+   * `python -m SimpleHTTPServer *port*`
 
 
 
