@@ -121,14 +121,14 @@ function openJsonAndReturnAsArray(path){
 function countryNameAndCountryCode(path){
 	return new Promise((resolve) => {
 		fs.readFile(path, "utf-8", (err, files) => {
-			var obj = {}
+			var arr = [];
 			files.split("\n").map(line => {
 				var key_value = splitByFirstSpace(line);
 				var key = key_value[0];
 				var value = key_value[1];
-				obj[key] = value;
+				arr.push({countryCode: key, countryName:value})
 			});
-			resolve(obj)
+			resolve(arr)
 		})
 	})
 }

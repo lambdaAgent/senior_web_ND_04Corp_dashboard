@@ -8,18 +8,8 @@ var currentUrl=""
 class Navbar extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {width: 0, url: "", showRightMenu: false, showLeftMenu: false};
-    }
-    _showRightMenu(e){
-      this.setState({showRightMenu: !this.state.showRightMenu, showLeftMenu: false})
-    }
-
-    _showLeftMenu(e){
-      this.setState({showLeftMenu: !this.state.showLeftMenu, showRightMenu: false})
-    }
-    _closeAllMenu(e){
-      this.setState({showLeftMenu: false, showRightMenu: false})
-    }
+        this.state = {width: 0, url: ""};
+    }   
     render() {
         const self = this; //don't Delete this
         const showBackButton = this.props.showBackButton;
@@ -32,18 +22,20 @@ class Navbar extends React.Component {
 
                 <CustomNavbar 
                     NavHeader={self.props.NavHeader}
-                    RBSymbol={<Hamburger onClick={self._showRightMenu.bind(this)}/>}
+                    RBSymbol={<Hamburger />}
                     RBAria={self.props.RBAria}
                     RBStyle={self.props.RBStyle}
-                    LBSymbol={<Menu onClick={self._showLeftMenu.bind(this)}/>}
+                    RBAction={self.props.RBAction}
+                    LBSymbol={<Menu />}
                     LBAria={self.props.LBAria}
                     LBStyle={self.props.LBStyle}
+                    LBAction={self.props.LBAction}
                   />
                   <CollapsedMenuRight 
-                      showRightMenu={this.state.showRightMenu}
+                      showRightMenu={this.props.showRightMenu}
                   />
                    <CollapsedMenuLeft 
-                      showLeftMenu={this.state.showLeftMenu}
+                      showLeftMenu={this.props.showLeftMenu}
                       content={this.props.CollapsedMenuLeftContent}
                   />
             </div>        
@@ -85,7 +77,7 @@ const Menu = (props) => (
       <button type="button" className="btn btn-lg btn-default" 
               style={{background: "none", border:"none", color:"white"}} 
               aria-label="toggle menu"
-              onClick={props.onClick}>
+              onClick={props.LBAction}>
         <i className="glyphicon glyphicon-cog" style={{fontSize: 25}}></i>
       </button>     
 )
@@ -94,7 +86,7 @@ const Hamburger = (props) => (
       <button type="button" className="btn btn-lg btn-default" 
               style={{background: "none", border:"none", color:"white"}} 
               aria-label="toggle menu"
-              onClick={props.onClick}>
+              onClick={props.RBAction}>
         <i className="glyphicon glyphicon-menu-hamburger" style={{fontSize: 25}}></i>
       </button>     
 )

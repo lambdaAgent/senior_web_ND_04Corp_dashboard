@@ -53,21 +53,27 @@ class App extends Component {
     e.preventDefault();
     this.props.getDatabaseFromServer();
   } 
- 
+  _showLeftMenu(){
+    this.setState({showLeftMenu: !this.state.showLeftMenu})
+  }
+  _showRightMenu(){
+    this.setState({showRightMenu: !this.state.showRightMenu})
+  }
+  _closeAllMenu(){
+    this.setState({showLeftMenu: false, showRightMenu: false})
+  }
   render() {
     //using redux, all dependent state must be managed within reducer. avoid local state, 
     return (
       <div>
-          { (this.state.width > 770) 
-             ? /*DESKTOP navbar*/
-                //TODO, navbar desktop should have header
-                <Navbar 
-                  NavHeader="Key Metric"
-                />
-             : /*MOBILE navber*/
-                ""
-          }
-          <main className="container">
+         <Navbar 
+            NavHeader="Key Metric"
+            RBAction={ this._showRightMenu.bind(this)}
+            LBAction={ this._showLeftMenu.bind(this) }
+            showLeftMenu={this.state.showLeftMenu}
+            showRightMenu={this.state.showRightMenu}
+          />
+          <main className="container" onClick={this._closeAllMenu.bind(this)}>
             <Desktop 
               BarChartData={this.props.barChartData}
               LineChartData={this.props.lineChartData}

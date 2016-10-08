@@ -13,7 +13,7 @@ class DataView extends React.Component {
     constructor(props) {
         super(props);
 		this.loopEvery2Second;
-    	this.state={width:0, barChartReady: false, lineChartReady: false};
+    	this.state={width:0, barChartReady: false, lineChartReady: false, showLeftMenu: false, showRightMenu: false};
     }
   	componentWillMount() {
     	window.addEventListener("resize", this.setState({width: window.innerWidth}) )
@@ -31,6 +31,15 @@ class DataView extends React.Component {
   	_filterSearch(word){
   		this.props.filterBySearch(this.props.allIssues, word)
   	}	
+  	_showLeftMenu(){
+  		this.setState({showLeftMenu: !this.state.showLeftMenu})
+  	}
+  	_showRightMenu(){
+  		this.setState({showRightMenu: !this.state.showRightMenu})
+  	}
+  	_closeAllMenu(){
+  		this.setState({showLeftMenu: false, showRightMenu: false})
+  	}
     render() {
     	//if no newData, wait for nextRender, show loading
     	var shownIssues = this.props.newData ? this.props.allIssues : undefined;
@@ -55,52 +64,65 @@ class DataView extends React.Component {
         
 
         return (
-        	<div className="container">
+        	<div>
         	    <Navbar 
         	    	NavHeader="Dataview"
+        	    	RBAction={ this._showRightMenu.bind(this)}
+        	    	LBAction={ this._showLeftMenu.bind(this) }
+        	    	showLeftMenu={this.state.showLeftMenu}
+        	    	showRightMenu={this.state.showRightMenu}
         	    	CollapsedMenuLeftContent={
-        	    		<FilterMenu 
-        	    			listOfCustomerName={props.listOfCustomerName}
-							listOfEmployeeName={props.listOfEmployeeName}
-							allIssues={props.allIssues}
-						    showAllCustomer={props.showAllCustomer}
-						    filterByCustomerName={props.filterByCustomerName}
-						    showAllEmployee={props.showAllCustomer}
-						    filterByEmployeeName={props.filterByEmployeeName}
-        	    		/>
+        	    		<div>
+	        	    		<FilterMenu 
+	        	    			listOfCustomerName={props.listOfCustomerName}
+								listOfEmployeeName={props.listOfEmployeeName}
+								allIssues={props.allIssues}
+							    showAllCustomer={props.showAllCustomer}
+							    filterByCustomerName={props.filterByCustomerName}
+							    showAllEmployee={props.showAllCustomer}
+							    filterByEmployeeName={props.filterByEmployeeName}
+	        	    		/>
+	        	    		<Sort 
+	        	    			PROPS={props}
+	        	    			shownIssues={shownIssues}
+	        	    		/>
+        	    		</div>
         	    	}
         	    />
-        	    <label htmlFor="searchbar" >Search: </label>
-		        <div style={{position:"relative"}}>
-		            <SearchBar 
-		              style={{width: "100%", textIndent: 30, borderRadius: 5}}
-		              onEnterPress={this._filterSearch.bind(this)}
-		              onChange={this._filterSearch.bind(this)}
-		            />
-		            <i className="glyphicon glyphicon-search" style={{top:3, left:5, position:"absolute", fontSize:"20px"}}></i>
-		        </div>
-		     	<hr/>
-        		{(!shownIssues) ? 
-        			/* show loading if no data exists*/
-        			<div>Loading...</div> 
-        			: 
-	        		<table className="table table-hover">
-					  <thead className="thead-inverse">
-					    <tr>
-					    {  
-					    	[ "Submitted", "Full Name", "Email", "Status", 
-					    	  "Closed By", "Closed At", "Description"
-					    	].map((content, index) => {
-					    	  return	<TableHead key={index} content={content} PROPS={props}  shownIssues={shownIssues} />
-					       })
-					    }
-					    </tr>
-					  </thead>
-					  <tbody>
-					    	{submitted}
-					  </tbody>
-					</table>
-        		}
+        	    <main className="container" onClick={this._closeAllMenu.bind(this)}>
+	        	    <label htmlFor="searchbar" >Search: </label>
+			        <div style={{position:"relative"}}>
+			            <SearchBar 
+			              style={{width: "100%", textIndent: 30, borderRadius: 5}}
+			              onEnterPress={this._filterSearch.bind(this)}
+			              onChange={this._filterSearch.bind(this)}
+			            />
+			            <i className="glyphicon glyphicon-search" style={{top:3, left:5, position:"absolute", fontSize:"20px"}}></i>
+			        </div>
+			     	<hr/>
+	        		{(!shownIssues) ? 
+	        			/* show loading if no data exists*/
+	        			<div>Loading...</div> 
+	        			: 
+		        		<table className="table table-hover">
+						  <thead className="thead-inverse">
+						    <tr>
+						    {  
+						    	[ "Submitted", "Full Name", "Email", "Status", 
+						    	  "Closed By", "Closed At", "Description"
+						    	].map((content, index) => {
+						    	  return	<TableHead key={index} content={content} PROPS={props}  shownIssues={shownIssues} />
+						       })
+						    }
+						    </tr>
+						  </thead>
+						  <tbody>
+						    	{submitted}
+						  </tbody>
+						</table>
+
+	        		}
+	        	</main>
         	</div>
         );
 
@@ -175,14 +197,14 @@ var FilterMenu = (props) => {
         	<div className="row">
 	   			<h3>Filter</h3>
 	   			<label>Customer Name: </label>
-	   			<Filter 
+	   			<SelectOptions 
 	   				defaultValue={"none"}
 	   				options={props.showAllCustomer(props.listOfCustomerName || [])}
 	   				onChange={(e) => props.filterByCustomerName(props.allIssues, e.target.value)}
 	   				/>
 	   			<div className="row" > 
 		   			<label style={{marginLeft: 15}}>Employee Name: </label>
-		   			<Filter 
+		   			<SelectOptions 
 		   				defaultValue={"none"}
 		   				options={props.showAllEmployee(props.listOfEmployeeName || [])}
 		   				onChange={(e) => props.filterByEmployeeName(props.allIssues, e.target.value)}
@@ -193,9 +215,9 @@ var FilterMenu = (props) => {
 	)
 }
 FilterMenu.propTypes = {
-	listOfCustomerName: React.PropTypes.array.isRequired,
-	listOfEmployeeName: React.PropTypes.array.isRequired,
-	allIssues: React.PropTypes.array.isRequired,
+	listOfCustomerName: React.PropTypes.array,
+	listOfEmployeeName: React.PropTypes.array,
+	allIssues: React.PropTypes.array,
     showAllCustomer: React.PropTypes.func.isRequired,
     filterByCustomerName: React.PropTypes.func.isRequired,
     showAllEmployee: React.PropTypes.func.isRequired,
@@ -203,7 +225,7 @@ FilterMenu.propTypes = {
 }
 
 
-const Filter = (props) => {
+const SelectOptions = (props) => {
 	const options = (props.options && props.length > 0) ? "" : props.options.map((o, index) => {
 		return <option style={{color: "black"}} key={index} value={o}>{o}</option>
 	})
@@ -215,6 +237,25 @@ const Filter = (props) => {
         <option value={props.defaultValue}>{props.defaultValue}</option> 
      	{options}
       </select>
+	)
+};
+
+
+const Sort = (props) => {
+	return(
+		<div>
+			<h3>Sort</h3>
+			<label>sort by: </label>
+			<SelectOptions 
+				defaultValue={"none"}
+   				options={[ "Submitted", "Full Name", "Email", "Status", 
+						    "Closed By", "Closed At", "Description"]}
+   				onChange={(e) => {
+   					var field = reformatField(e.target.value)
+   					props.PROPS.sortBy(props.shownIssues, field, true)
+   				}}
+			/>
+		</div>
 	)
 }
 
