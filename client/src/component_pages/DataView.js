@@ -18,12 +18,12 @@ class DataView extends React.Component {
   	componentWillMount() {
     	window.addEventListener("resize", this.setState({width: window.innerWidth}) )
       	this.setState({width: window.innerWidth}) 
-      	//this.loopEvery2Second = setInterval( () => {
+      	this.loopEvery2Second = setInterval( () => {
         	this.props.getDatabaseFromServer();
-      	//},2000);
+      	},2000);
   	}
   	componentWillUnmount() {
-      //TODO; clearInterval
+      clearInterval(this.loopEvery2Second)
   	}
   	componentWillUpdate(nextProps, nextState) {
   	 	console.log("will update", nextProps);

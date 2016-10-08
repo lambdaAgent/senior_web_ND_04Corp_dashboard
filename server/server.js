@@ -4,16 +4,16 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var path = require("path")
 var dataApi_P = require("./dataAPI.js").init;
-var	{recycleClosedToBeOpenIssue, simulatePurchases,simulateHiredEmployee} = require("./dataAPI")
-var openIssue, closedIssue, EMPLOYEE, customer, COUNTRY_CODE, CANDIDATE_EMPLOYEE;
+var	{cloneClosedToBeOpenIssue, simulatePurchases,simulateHiredEmployee} = require("./dataAPI")
+var OPEN_ISSUE, CLOSED_ISSUE, EMPLOYEE, CUSTOMER, COUNTRY_CODE, CANDIDATE_EMPLOYEE;
 
 
 dataApi_P().then(arr => {
-  openIssue = arr[0];
-  closedIssue = arr[1];
+  OPEN_ISSUE = arr[0];
+  CLOSED_ISSUE = arr[1];
   EMPLOYEE = arr[2];
   CANDIDATE_EMPLOYEE = arr[3];
-  customer = arr[4];
+  CUSTOMER = arr[4];
   COUNTRY_CODE = arr[5];
 
   var app = express();
@@ -35,9 +35,6 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     // Request headers you wish to allow
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
     res.setHeader('Access-Control-Allow-Credentials', true);
     next();
 });
@@ -51,21 +48,38 @@ app.use(function (req, res, next) {
   })
 
 
-  app.get('/getAll', function (req, res) {
+  app.get('/getKeyMetric', function (req, res) {
 
    	  //for each request, recycle old issues, add new purchases.. 
     	Promise.all([
-        recycleClosedToBeOpenIssue(closedIssue, openIssue), 
-        simulatePurchases(customer)
+        cloneClosedToBeOpenIssue(CLOSED_ISSUE, OPEN_ISSUE), 
+        simulatePurchases(CUSTOMER)
         ])
       .then(result => {
-          var Response = { openIssue, closedIssue,  employee, customer, countryCode };
+          var Response = { openIssue:OPEN_ISSUE, closedIssue:CLOSED_ISSUE, customer: CUSTOMER};
           res.json(Response)
       })
          
       
   });
 
+  app.get('/getKeyMetric', function (req, res) {
+
+      //for each request, recycle old issues, add new purchases.. 
+      Promise.all([
+        cloneClosedToBeOpenIssue(CLOSED_ISSUE, OPEN_ISSUE)
+        ])
+      .then(result => {
+          var Response = { openIssue:OPEN_ISSUE, 
+                           closedIssue:CLOSED_ISSUE, 
+                           customer: CUSTOMER, // list of customer's names are needed for filtering purposes 
+                           employee: EMPLOYEE  // list of employee's names are needed for filtering purposes
+                         };
+          res.json(Response)
+      })
+         
+      
+  });
   //ERROR Handler
 
 

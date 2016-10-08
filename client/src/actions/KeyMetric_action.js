@@ -20,13 +20,13 @@ const Action = (dispatch) => ({
           result = {
             labels: Object.keys(__item),
             data: sumEachMonthPurchases(__item),
-            openIssues: props.totalPurchases.toFixed(2)
+            totalPurchases: props.totalPurchases.toFixed(2)
           }
         }
         dispatch({type: "RENDER_LINE_CHART", data: result})
     },
     getDatabaseFromServer(){
-        fetch("http://localhost:8000/getAll")
+        fetch("http://localhost:8000/getKeyMetric")
           .then(res => res.json() )
           .then(obj => {
             const AllIssue = obj.closedIssue.concat(obj.openIssue );
@@ -45,7 +45,10 @@ const Action = (dispatch) => ({
                 openIssues: OpenIssueGroupByMonth, 
                 closeIssues: CloseIssueGroupByMonth, 
                 AllIssues: AllIssueGroupByMonth,
-                totalAllIssues, totalOpenIssues, totalClosedIssues, totalPurchases,
+                totalAllIssues, 
+                totalOpenIssues, 
+                totalClosedIssues, 
+                totalPurchases,
                 newData: true
               }
               dispatch({type: "KM_GET_from_DB", cleansedData: result})

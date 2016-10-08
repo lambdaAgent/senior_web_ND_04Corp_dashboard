@@ -21,7 +21,7 @@ var init = function(){
 
 module.exports = {
 	init,
-	recycleClosedToBeOpenIssue,
+	cloneClosedToBeOpenIssue,
 	simulateHiredEmployee,
 	simulatePurchases
 }
@@ -58,17 +58,15 @@ function simulatePurchases(customer_arr){
 // function simulateUnsubscribeCustomer()
 
 
-function recycleClosedToBeOpenIssue(closedIssue, openIssue){
+function cloneClosedToBeOpenIssue(closedIssue, openIssue){
 	return new Promise((resolve, reject) => {
 		if(closedIssue.length < 50) return;
 
-		var amount = Math.floor(Math.random() * 2) + 1; //1-3 recycled submitted issues
-		var random = Math.floor(Math.random() * 100) + 1;
-
-		var spliced_issues = closedIssue.splice(random,amount);
-
+		var random = Math.floor(Math.random() * 100);
+		var amount = random + Math.floor(Math.random() * 2) + 1; //1-3 recycled submitted issues
+		var sliced_issues = closedIssue.slice(random,amount);
 		//change status, closed_at. closed_by
-		spliced_issues.map(issue => {		
+		sliced_issues.map(issue => {		
 			issue.closed_at = null;
 			issue.closed_by = null;
 			issue.status = "open";

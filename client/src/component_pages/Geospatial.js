@@ -2,26 +2,9 @@ import React from 'react';
 
 //components
 import Navbar from "../component_utils/Navbar";
+import Loading from "../component_utils/Loading";
 
 var Map;
-const MapOptions=(React) => ({
-                    scope:"world",
-                    element: document.getElementById("map"),
-                    responsive:true,
-                    fills: {
-                          EMPLOYEE: 'rgba(255,0,100, 0.3)',
-                          defaultFill: 'rgb(0,0,0)',
-                    },
-                    data: React.state.data,
-                     geographyConfig: {
-                          popupTemplate: function(geo, data) {
-                              return ['<div class="hoverinfo"><strong>',
-                                      'Number of Employee in ' + geo.properties.name,
-                                      ': ' + data.NumberOfEmployee,
-                                      '</strong></div>'].join('');
-                          }
-                      }
-                })
 class GeoSpatial extends React.Component {
     constructor(props) {
         super(props);
@@ -45,7 +28,7 @@ class GeoSpatial extends React.Component {
     }
 
     componentDidMount() {
-        this.loopEvery2seconds = setInterval( () => {
+        // this.loopEvery2seconds = setInterval( () => {
           fetch("http://localhost:8000/getEmployee")
           .then(res => res.json())
           .then(obj => {
@@ -62,7 +45,7 @@ class GeoSpatial extends React.Component {
              var mapHeight = 5/12 *  this.state.width || 0;
              this.setState({labels:labels, data:colors, mapHeight})
           });
-        },2000)
+        // },2000)
 
         Map = new window.Datamap(MapOptions(this));
         // Map.labels({'customLabelText': this.state.labels });
@@ -115,4 +98,25 @@ class GeoSpatial extends React.Component {
     }
 }
 
-export default GeoSpatial;
+module.exports = GeoSpatial;
+
+
+
+const MapOptions=(React) => ({
+                    scope:"world",
+                    element: document.getElementById("map"),
+                    responsive:true,
+                    fills: {
+                          EMPLOYEE: 'rgba(255,0,100, 0.3)',
+                          defaultFill: 'rgb(0,0,0)',
+                    },
+                    data: React.state.data,
+                     geographyConfig: {
+                          popupTemplate: function(geo, data) {
+                              return ['<div class="hoverinfo"><strong>',
+                                      'Number of Employee in ' + geo.properties.name,
+                                      ': ' + data.NumberOfEmployee,
+                                      '</strong></div>'].join('');
+                          }
+                      }
+                })

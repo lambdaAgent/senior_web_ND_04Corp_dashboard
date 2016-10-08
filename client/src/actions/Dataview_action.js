@@ -50,8 +50,8 @@ const Action = (dispatch) => ({
 
           const listOfCustomerName = {listOfCustomerName: extractNameFromArr(obj.customer)};
           const listOfEmployeeName = {listOfEmployeeName: extractNameFromArr(obj.employee)};
-          console.log(listOfCustomerName)
           const newObj = Object.assign({}, obj, AllIssues,listOfCustomerName, listOfEmployeeName, {newData: true});
+          
           dispatch({type: "DV_newData", data: newObj})
         })
         .catch(err => console.error(err))
