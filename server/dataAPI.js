@@ -7,20 +7,38 @@ const closedIssuePath = "../database/closed_issues_Final.json"
 const EmployeePath = "../database/Employee_Final.csv"
 const CustomerPath = "../database/customer_Final.csv"
 const countryCodePath = "../database/3letterCountryCode.txt";
+const candidateEmployeePath = "../database/candidateEmployee.csv";
 
 var	openIssue = openJsonAndReturnAsArray(openIssuePath);
 var	closedIssue = openJsonAndReturnAsArray(closedIssuePath);
 var	employee = openCSVAndReturnAsArray(EmployeePath, true);
+var candidateEmployee = openCSVAndReturnAsArray(candidateEmployeePath, true);
 var	customer = openCSVAndReturnAsArray(CustomerPath);
 var countryCode = countryNameAndCountryCode(countryCodePath)
 var init = function(){
-	return Promise.all([openIssue,closedIssue,employee,customer, countryCode])
+	return Promise.all([openIssue,closedIssue,employee, candidateEmployee, customer, countryCode])
 }
 
 module.exports = {
 	init,
 	recycleClosedToBeOpenIssue,
+	simulateHiredEmployee,
 	simulatePurchases
+}
+
+
+function simulateHiredEmployee(candidateEmployee_arr, employee){
+	return new Promise((resolve, reject) => {
+		//grab randomly from employee candidate
+		var amount = Math.floor(Math.random() * 1) + 1; //1-4 purchases ;
+		var random = Math.floor(Math.random() * 1) * 50; //pick from 1 to 50;
+
+		var employeeWithNewlyHired = candidateEmployee_arr.splice(random, amount).map(e => {
+			//well new employee start with empty issue
+			employee.push(e);
+		});
+		resolve(employeeWithNewlyHired)
+	});
 }
 
 function simulatePurchases(customer_arr){
@@ -83,7 +101,13 @@ function openCSVAndReturnAsArray(path, isEmployee){
 					var values = line.split("[")[0];
 					var issuesId = line.split("[")[1];
 					//delete closing square_bracket ];
-					if(!issuesId) return;
+
+					if(!issuesId) {
+						fields.split(",").map( (field, fieldIdx) => {
+							obj[field] = line.split(",")[fieldIdx];
+						});
+						return result_arr.push(obj);
+					}
 					var issuesId_ = issuesId.substring(0, issuesId.length-1)
 
 					var array_issues = issuesId_.split(",").map(id => id);

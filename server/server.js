@@ -4,16 +4,17 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var path = require("path")
 var dataApi_P = require("./dataAPI.js").init;
-var	{recycleClosedToBeOpenIssue, simulatePurchases} = require("./dataAPI")
-var openIssue, closedIssue, employee, customer, countryCode;
+var	{recycleClosedToBeOpenIssue, simulatePurchases,simulateHiredEmployee} = require("./dataAPI")
+var openIssue, closedIssue, EMPLOYEE, customer, COUNTRY_CODE, CANDIDATE_EMPLOYEE;
 
 
 dataApi_P().then(arr => {
   openIssue = arr[0];
   closedIssue = arr[1];
-  employee = arr[2];
-  customer = arr[3];
-  countryCode = arr[4];
+  EMPLOYEE = arr[2];
+  CANDIDATE_EMPLOYEE = arr[3];
+  customer = arr[4];
+  COUNTRY_CODE = arr[5];
 
   var app = express();
 
@@ -27,14 +28,36 @@ dataApi_P().then(arr => {
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
 
-  app.get("/", (req, res) => {
-  	res.send("default server path")
+app.use(function (req, res, next) {
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
+
+  app.get("/getEmployee", (req, res) => {
+      //do the simulation of new employee being hired
+      simulateHiredEmployee(CANDIDATE_EMPLOYEE,EMPLOYEE)
+      .then(employee => {
+        res.json({employee: EMPLOYEE, countryCode:COUNTRY_CODE})
+      })
   })
 
 
   app.get('/getAll', function (req, res) {
+
    	  //for each request, recycle old issues, add new purchases.. 
-    	Promise.all([recycleClosedToBeOpenIssue(closedIssue, openIssue), simulatePurchases(customer)])
+    	Promise.all([
+        recycleClosedToBeOpenIssue(closedIssue, openIssue), 
+        simulatePurchases(customer)
+        ])
       .then(result => {
           var Response = { openIssue, closedIssue,  employee, customer, countryCode };
           res.json(Response)

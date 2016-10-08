@@ -1,48 +1,18 @@
 import React from 'react';
-import $ from "jquery";
 
 //components
 import Navbar from "../component_utils/Navbar";
 
-var Map, DataConfiguration;
-class GeoSpatial extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state={ employee: undefined,countryCode: undefined, 
-                     showLeftMenu: false, showRightMenu: false,
-                     mapHeight:0, width:0
-                   }
-    }
-    componentDidMount() {
-        window.addEventListener("resize", this.setState({width: window.innerWidth}) )
-        this.setState({width: window.innerWidth}) 
-        fetch("http://localhost:8000/getAll")
-        .then(res => res.json())
-        .then(obj => {
-          // labels = {USA: 'USA = 2 employee'}
-          console.log(obj)
-          var labels = {}, counts = {}, colors={};
-           obj.employee.map(employee => {
-              obj.countryCode.map(c => {
-                 if(c.countryName.indexOf(employee.country) >= 0 ){
-                     counts[c.countryCode] = (counts[c.countryCode] ? counts[c.countryCode]+=1 : 1); 
-                     labels[c.countryCode] = `${c.countryCode}: ${counts[c.countryCode]} `;
-                     colors[c.countryCode] = {fillKey: "EMPLOYEE", NumberOfEmployee: counts[c.countryCode]}
-                 }
-              })
-           });
-           var mapHeight =5/12 *  this.state.width || 0;
-           this.setState({labels:labels, data:colors, mapHeight})
-        })
-    }
-    componentDidUpdate(nextProps, nextState) {
-        Map = new window.Datamap({
+var Map;
+const MapOptions=(React) => ({
+                    scope:"world",
                     element: document.getElementById("map"),
+                    responsive:true,
                     fills: {
                           EMPLOYEE: 'rgba(255,0,100, 0.3)',
                           defaultFill: 'rgb(0,0,0)',
                     },
-                    data: this.state.data,
+                    data: React.state.data,
                      geographyConfig: {
                           popupTemplate: function(geo, data) {
                               return ['<div class="hoverinfo"><strong>',
@@ -51,13 +21,16 @@ class GeoSpatial extends React.Component {
                                       '</strong></div>'].join('');
                           }
                       }
-                });
-        Map.legend();
-        Map.labels({'customLabelText': this.state.labels });
-     
+                })
+class GeoSpatial extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state={ employee: undefined,countryCode: undefined, 
+                     showLeftMenu: false, showRightMenu: false,
+                     mapHeight:0, width:0
+                   };
+        this.loopEvery2seconds;
     }
-        // Map.labels({'customLabelText': {RUS: 'RUS: 20Employee', USA: "USA: 12employee"}});
-
     _showLeftMenu(){
       this.setState({showLeftMenu: !this.state.showLeftMenu})
     }
@@ -67,6 +40,51 @@ class GeoSpatial extends React.Component {
     _closeAllMenu(){
       this.setState({showLeftMenu: false, showRightMenu: false})
     }
+    componentWillUnmount() {
+       clearInterval(this.loopEvery2seconds);     
+    }
+
+    componentDidMount() {
+        this.loopEvery2seconds = setInterval( () => {
+          fetch("http://localhost:8000/getEmployee")
+          .then(res => res.json())
+          .then(obj => {
+            var labels = {}, counts = {}, colors={};
+             obj.employee.map(employee => {
+                obj.countryCode.map(c => {
+                   if(c.countryName.indexOf(employee.country) >= 0 ){
+                       counts[c.countryCode] = (counts[c.countryCode] ? counts[c.countryCode]+=1 : 1); 
+                       labels[c.countryCode] = `${c.countryCode}: ${counts[c.countryCode]} `;
+                       colors[c.countryCode] = {fillKey: "EMPLOYEE", NumberOfEmployee: counts[c.countryCode]}
+                   }
+                })
+             });
+             var mapHeight = 5/12 *  this.state.width || 0;
+             this.setState({labels:labels, data:colors, mapHeight})
+          });
+        },2000)
+
+        Map = new window.Datamap(MapOptions(this));
+        // Map.labels({'customLabelText': this.state.labels });
+        window.addEventListener("resize", () => {
+          Map.resize();
+          this.setState({width: window.innerWidth}) 
+        })
+        this.setState({width: window.innerWidth}) 
+     
+    }
+    componentWillUpdate(nextProps, nextState) {
+        var mapElement = document.getElementById("map")
+        mapElement.innerHTML = ""; 
+        Map = new window.Datamap(MapOptions(this));
+
+        Map.updateChoropleth(nextState.data, {reset:true});
+        Map.labels();
+        Map.labels({'customLabelText': nextState.labels }, {reset:true});
+    }
+        // Map.labels({'customLabelText': {RUS: 'RUS: 20Employee', USA: "USA: 12employee"}});
+
+    
     render() {
         return(
           <div>
