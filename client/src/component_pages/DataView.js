@@ -24,10 +24,7 @@ class DataView extends React.Component {
       	},2000);
   	}
   	componentWillUnmount() {
-      clearInterval(this.loopEvery2Second)
-  	}
-  	componentWillUpdate(nextProps, nextState) {
-  	 	console.log("will update", nextProps);
+      clearInterval(this.loopEvery4Second)
   	}
   	_filterSearch(word){
   		this.props.filterBySearch(this.props.allIssues, word)

@@ -28,7 +28,7 @@ class GeoSpatial extends React.Component {
     }
 
     componentDidMount() {
-        // this.loopEvery2seconds = setInterval( () => {
+        this.loopEvery2seconds = setInterval( () => {
           fetch("http://localhost:8000/getEmployee")
           .then(res => res.json())
           .then(obj => {
@@ -45,7 +45,7 @@ class GeoSpatial extends React.Component {
              var mapHeight = 5/12 *  this.state.width || 0;
              this.setState({labels:labels, data:colors, mapHeight})
           });
-        // },2000)
+        },2000)
 
         Map = new window.Datamap(MapOptions(this));
         // Map.labels({'customLabelText': this.state.labels });
