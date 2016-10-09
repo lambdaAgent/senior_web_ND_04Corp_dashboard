@@ -25,6 +25,25 @@ const Action = (dispatch) => ({
         }
         dispatch({type: "RENDER_LINE_CHART", data: result})
     },
+    filtereLineChart(props, time_type){
+      var result, __item;
+      if(time_type === "All year"){
+        __item = props["purchases"];
+        result = {
+          labels: Object.keys(__item),
+          data: sumEachMonthPurchases(__item),
+          totalPurchases: props.totalPurchases.toFixed(2)
+        }
+      } else {
+        __item = props["purchases"][time_type];
+        result = {
+          labels: Object.keys(__item),
+          data: monthlyPurchases(__item),
+          // totalPurchases: monthlyPurchases(__item).reduce((prev, next) => {return prev+next},0)
+        }
+        console.log("result",result)
+      }
+    },
     getDatabaseFromServer(){
         fetch("http://localhost:8000/getKeyMetric")
           .then(res => res.json() )
@@ -73,6 +92,20 @@ function sumEachMonthPurchases(obj){
       })[0].toFixed(2);
   });
   return result;
+}
+
+function monthlyPurchases(obj){
+  var result = Object.keys(obj).map(month => {
+    return obj[month].reduce((prev, next) => {
+      return prev + next
+    }, 0)
+  })
+}
+
+function monthlyIssues(obj){
+  var result = Object.keys(obj).map(month => {
+    return obj[month].length;
+  })
 }
 
 function sumIssuesByYear(obj){

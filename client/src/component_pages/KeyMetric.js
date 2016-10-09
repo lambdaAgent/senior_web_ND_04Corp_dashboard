@@ -8,9 +8,9 @@ var CHART; //will be initialized after component did mounted
 //components
 import Navbar from "../component_utils/Navbar";
 import Loading from "../component_utils/Loading";
-// import BarChart from "../component_utils/BarChart";
-const LineChart = require("react-chartjs").Line;
-const BarChart = require("react-chartjs").Bar;
+import SelectOptions from "../component_utils/SelectOptions";
+import LineChart from "../component_utils/LineChart";
+import BarChart from "../component_utils/BarChart";
 
 
 const COLOR = {
@@ -18,7 +18,7 @@ const COLOR = {
   border:['rgba(255,99,132,1)',   'rgba(54, 162, 235, 1)',  'rgba(255, 206, 86, 1)'  ,'rgba(75, 192, 192, 1)'  ,'rgba(153, 102, 255, 1)'  ,'rgba(255, 159, 64, 1)']
 }
 var previousPurchase = 0;
-
+var currentScroll = 0;
 
 /*  
     so many configuration with redux.... 
@@ -31,12 +31,11 @@ class App extends Component {
     this.state={width:0, barChartReady: false, lineChartReady: false, panelWidth:0};
   }
   componentDidMount() {
-        window.addEventListener("resize", this.setState({width: window.innerWidth}) )
-        CHART = window.Chart;
         this.loopEvery2Second = setInterval( () => {
             this.props.getDatabaseFromServer();
-        },4000);
-      
+        },4000);  
+        window.addEventListener("resize", this.setState({width: window.innerWidth}) )
+        CHART = window.Chart;
         var panel = $("#LoadingPanel");
         if(!panel[0]) return;
         var width = panel[0].offsetWidth-45;
@@ -81,10 +80,11 @@ class App extends Component {
           />
           <main className="container" onClick={this._closeAllMenu.bind(this)}>
             <Desktop 
+              PROPS={this.props}
               panelWidth={this.state.panelWidth}
               panelHeight={this.state.panelHeight}
-              BarChartData={this.props.barChartData}
-              LineChartData={this.props.lineChartData}
+              BarChartData={this.props.FilteredBC ? this.props.FilteredBC : this.props.barChartData}
+              LineChartData={this.props.FilteredLC ? this.props.FilteredLC : this.props.lineChartData}
             />
 
           </main>
@@ -111,34 +111,29 @@ const Desktop = (props) => {
   if(!BC || !LC) return <div className="panel chart_VD" id="LoadingPanel"><Loading /></div>;
   return(
       <div>
-         {/*<BarChart
-                     Chart={CHART}
-                     labels={ BC.labels }
-                     label={"# of issues"}
-                     data={ BC.data }
-                     color={COLOR.bg[0]}
-                     borderColor={COLOR.border[0]} 
-                     openIssues={BC.openIssues}/>*/}
+         <BarChart
+           Chart={CHART}
+           labels={ BC.labels }
+           label={"# of issues"}
+           data={ BC.data }
+           color={COLOR.bg[0]}
+           borderColor={COLOR.border[0]} 
+           openIssues={BC.openIssues}/>
         <br />
 
-        <div className="panel panel-primary chart_VD" id="Panel">
-            <div className="panel-heading">
-              <h3 className="panel-title">Purchases Chart</h3>
-            </div>
-            <div className="panel-body">
-              <BarChart data={createBC_DATA(BC)} width={props.panelWidth} height={props.panelHeight}/>
-            </div>
-            <div className="panel-footer">Previous Purchases: $ {separateThousands(props.previousPurchases)} | Total Purchases: $ {separateThousands(props.totalPurchases)}</div>
-        </div>
-        <div className="panel panel-primary chart_VD" >
-            <div className="panel-heading">
-              <h3 className="panel-title">Purchases Chart</h3>
-            </div>
-            <div className="panel-body" id="linePanel">
-              <LineChart data={createLC_DATA(LC)} options={ {responsive: true, hover:{mode:"label"}} }width={props.panelWidth} height={props.panelHeight} />
-            </div>
-            <div className="panel-footer">Previous Purchases: $ {separateThousands(previousPurchase)} | Total Purchases: $ {separateThousands(LC.totalPurchases)}</div>
-        </div>      
+     
+
+        <LineChart
+            Chart={CHART}
+            PROPS={props}
+            label={"# of purchases"}
+            labels={LC.labels}
+            data={ LC.data }
+            color={COLOR.bg[0]}
+            borderColor={COLOR.border[0]}
+            totalPurchases={LC.totalPurchases} 
+            previousPurchases={previousPurchase}
+        />
       </div>
   )
 };

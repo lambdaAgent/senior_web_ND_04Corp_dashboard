@@ -8,17 +8,18 @@ import Navbar from "../component_utils/Navbar";
 import BarChart from "../component_utils/BarChart";
 import LineChart from "../component_utils/LineChart";
 import SearchBar from "../component_utils/SearchBar"
+import Loading from "../component_utils/Loading";
 
 class DataView extends React.Component {
     constructor(props) {
         super(props);
-		this.loopEvery2Second;
+		this.loopEvery4Second;
     	this.state={width:0, barChartReady: false, lineChartReady: false, showLeftMenu: false, showRightMenu: false};
     }
   	componentWillMount() {
     	window.addEventListener("resize", this.setState({width: window.innerWidth}) )
       	this.setState({width: window.innerWidth}) 
-      	this.loopEvery2Second = setInterval( () => {
+      	this.loopEvery4Second = setInterval( () => {
         	this.props.getDatabaseFromServer();
       	},2000);
   	}
@@ -60,9 +61,22 @@ class DataView extends React.Component {
 										<td>{s.description}</td>
 									</tr>
 								)
-							}) : ""
+							}) : "";
         
-
+		const submittedMobile = (shownIssues && shownIssues.length > 0) ?
+								  shownIssues.map((s, index) => {
+								  	return(
+ 						<article className="card card-block">
+						    <h4 className="card-title"><b>Name:</b> {s.customer_name} | {s.created_at}</h4>
+						    <p className="card-text"><b>email:</b> {s.customer_email}</p>
+						    <p className="card-text"><b>status:</b> {s.status}</p>    
+						    <p className="card-text"><b>closed_by:</b> {s.closed_by}</p>    
+							<p className="card-text"><b>closed_at:</b> {s.closed_at}</p>
+							<p className="card-text"><b>description:</b> {s.description}</p>     
+							<hr style={{border: "1px solid black"}}/>
+						</article>
+								  	);
+								  }) : "";
         return (
         	<div>
         	    <Navbar 
@@ -102,25 +116,30 @@ class DataView extends React.Component {
 			     	<hr/>
 	        		{(!shownIssues) ? 
 	        			/* show loading if no data exists*/
-	        			<div>Loading...</div> 
+	        			<div><Loading /></div> 
 	        			: 
-		        		<table className="table table-hover">
-						  <thead className="thead-inverse">
-						    <tr>
-						    {  
-						    	[ "Submitted", "Full Name", "Email", "Status", 
-						    	  "Closed By", "Closed At", "Description"
-						    	].map((content, index) => {
-						    	  return	<TableHead key={index} content={content} PROPS={props}  shownIssues={shownIssues} />
-						       })
-						    }
-						    </tr>
-						  </thead>
-						  <tbody>
-						    	{submitted}
-						  </tbody>
-						</table>
-
+	        		    (this.state.width > 720) ?
+			        	 	<table className="table table-hover">
+							  <thead className="thead-inverse">
+							    <tr>
+							    {  
+							    	[ "Submitted", "Full Name", "Email", "Status", 
+							    	  "Closed By", "Closed At", "Description"
+							    	].map((content, index) => {
+							    	  return	<TableHead key={index} content={content} PROPS={props}  shownIssues={shownIssues} />
+							       })
+							    }
+							    </tr>
+							  </thead>
+							  <tbody>
+							    	{submitted}
+							  </tbody>
+							</table>
+							:
+							<div className="list-group">
+							  {submittedMobile}
+							</div>
+					    
 	        		}
 	        	</main>
         	</div>

@@ -23,6 +23,7 @@ waitNextTick()
                 }]
             },
             options: {
+              animation:false,
               scales: {
                 yAxes: [{
                   ticks: {beginAtZero: true}

@@ -41,7 +41,7 @@ const Action = (dispatch) => ({
       dispatch({ type: "DV_newData", data: {allIssues: result, newData:true} })
     },
     getDatabaseFromServer(allIssues, field, ASC){
-      fetch("http://localhost:8000/getAll")
+      fetch("http://localhost:8000/getDataView")
         .then(res => res.json() )
         .then(obj => {
           const AllIssues = {allIssues: obj.closedIssue.concat(obj.openIssue) }
