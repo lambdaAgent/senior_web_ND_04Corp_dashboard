@@ -63,7 +63,7 @@ app.use(function (req, res, next) {
       
   });
 
-  app.get('/getKeyMetric', function (req, res) {
+  app.get('/getDataView', function (req, res) {
 
       //for each request, recycle old issues, add new purchases.. 
       Promise.all([
