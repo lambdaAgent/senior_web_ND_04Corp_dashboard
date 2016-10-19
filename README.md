@@ -1,8 +1,12 @@
 # Project04 - Corporate Dashboard
+[github](https://github.com/vdj4y/senior_web_ND_04Corp_dashboard)
+Built a corporate dashboard application including a geospatial view, a "key metrics" view and a "data view". Stack and library used are React, React-router, Redux, and chart.js
+
+
 
 ### Info:
 1. the project is divided into 3 main folder: /client, /database, /server
-2. Important file, in database are those with the word "_Final", (the rest are raw unformatted data):
+2. Important file in database are those with the word "_Final", (the rest are raw unformatted data):
     ```
         3letterCountryCode.txt
         customer_Final.csv

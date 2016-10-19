@@ -5,31 +5,6 @@
   margin: 0 auto;
 }
 
-@media (max-width: 770px){
-  .desktop{
-    display: none;
-  }
-
-  .reviews-mobile{
-    max-width: 480px;
-  }
-  body{
-    margin-top: 70px;
-  }
-  .login{
-    margin-top: 59px;
-  }
-
-}
-@media (min-width: 770px){
-  .mobile{
-    display: none;
-  }
-  body{
-    margin-top: 70px;
-  }
-}
-
 .floatingButton:active{
   border: none;
 }
