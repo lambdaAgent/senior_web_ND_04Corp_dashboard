@@ -2,6 +2,7 @@
 [github](https://github.com/vdj4y/senior_web_ND_04Corp_dashboard)
 Built a corporate dashboard application including a geospatial view, a "key metrics" view and a "data view". Stack and library used are React, React-router, Redux, and chart.js
 
+<img src="https://github.com/vdj4y/senior_web_ND_04Corp_dashboard/blob/master/Screen%20Shot%202016-10-19%20at%201.59.57%20PM.png" />
 
 
 ### Info:
